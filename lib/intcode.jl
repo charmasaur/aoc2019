@@ -60,6 +60,9 @@ end
 readfrom!(x::Array) = popfirst!(x)
 writeto!(x::Array, value) = push!(x, value)
 
+readfrom!(x::Channel) = take!(x)
+writeto!(x::Channel, value) = put!(x, value)
+
 # Execute a program, returning the final memory
 function execute(code, input, output)
     p = Program(DefaultDict(0, pairs(code)), 1, 0, eltype(code))
@@ -104,6 +107,16 @@ function execute(code, input)
     output = []
     execute(code, input, output)
     return output
+end
+
+# Wrap the program as a task
+function astask(code)
+    input = Channel(Inf)
+    output = Channel(Inf)
+    task = Task(() -> execute(code, input, output))
+    bind(input, task)
+    bind(output, task)
+    return (task, input, output)
 end
 
 # Load code from a file

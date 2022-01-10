@@ -8,10 +8,6 @@ tryit(phases) = foldl((prev_output, phase) -> execute(code, [phase, prev_output]
 perms = collect(permutations(0:4))
 println(maximum(map(tryit, perms)))
 
-
-readfrom!(x::Channel) = take!(x)
-writeto!(x::Channel, value) = put!(x, value)
-
 function tryit2(phases)
     pipes = [Channel(Inf) for phase in phases]
     map(put!, pipes, phases)
