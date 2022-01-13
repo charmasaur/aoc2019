@@ -56,6 +56,12 @@ function readfrom!(x::Blocking)
 end
 
 code[1] = 2
-io = Blocking(DefaultDict(0), [], false)
+x = ""
+while !(x in ["y","n"])
+    global x
+    println("Play manually (y/n)?")
+    x = readline()
+end
+io = Blocking(DefaultDict(0), [], x == "y")
 execute(code, io, io)
 render!(io)
